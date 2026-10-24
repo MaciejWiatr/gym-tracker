@@ -1,0 +1,29 @@
+<!-- @dsCard group="Member app" viewport="1100x900" name="PJS Gym member app" subtitle="Home, train, workout detail, live logger, progress" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>PJS Gym — Member app</title><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{background:#E9E7E9;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 0}::-webkit-scrollbar{display:none}</style></head><body><div id="root"></div>
+<script type="text/babel" src="Phone.jsx"></script>
+<script type="text/babel" src="HomeScreen.jsx"></script>
+<script type="text/babel" src="TrainScreen.jsx"></script>
+<script type="text/babel" src="WorkoutDetailScreen.jsx"></script>
+<script type="text/babel" src="ActiveWorkoutScreen.jsx"></script>
+<script type="text/babel" src="ProgressScreen.jsx"></script>
+<script type="text/babel">
+const {TabBar,Toast}=window.PJSGymDesignSystem_ff31cf;
+const TABS=[{id:"home",label:"Home",icon:"house"},{id:"train",label:"Train",icon:"dumbbell"},{id:"progress",label:"Progress",icon:"chart-no-axes-column"}];
+function App(){
+  const [tab,setTab]=React.useState(localStorage.getItem("pjs.tab")||"home");
+  const [route,setRoute]=React.useState(null);const [toast,setToast]=React.useState(null);
+  React.useEffect(()=>localStorage.setItem("pjs.tab",tab),[tab]);
+  const finish=()=>{setRoute(null);setTab("progress");setToast("Workout saved. 1 new PR");setTimeout(()=>setToast(null),2600);};
+  let body;
+  if(route==="detail")body=<WorkoutDetailScreen onBack={()=>setRoute(null)} onStart={()=>setRoute("active")}/>;
+  else if(route==="active")body=<ActiveWorkoutScreen onClose={()=>setRoute(null)} onFinish={finish}/>;
+  else body=<>{tab==="home"&&<HomeScreen onOpenWorkout={()=>setRoute("detail")}/>}{tab==="train"&&<TrainScreen onStartRoutine={()=>setRoute("active")}/>}{tab==="progress"&&<ProgressScreen/>}<TabBar items={TABS} active={tab} onChange={setTab}/></>;
+  return <Phone theme={route==="detail"?"dark":undefined} overlay={route==="detail"}>{body}{toast&&<div style={{position:"absolute",top:60,left:0,right:0,display:"flex",justifyContent:"center",zIndex:70}}><Toast tone="success" icon="trophy" message={toast}/></div>}</Phone>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>
