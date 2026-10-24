@@ -36,15 +36,18 @@ uv run fastapi dev
 
 ## Database
 
-Postgres runs on [Neon](https://neon.com). `neon.ts` and `.neon` in the repo root link the project and its `production` branch.
+Postgres runs on [Neon](https://neon.com); `neon.ts` in the repo root declares the services. Only the backend connects to it.
+
+From the repo root:
 
 ```bash
 npm i -g neon
 neon login
+neon link --org-id org-rough-cake-25119073 --project-id muddy-wave-76386845 --branch production
 neon env pull   # writes DATABASE_URL to .env.local in the repo root
 ```
 
-The frontend loads that root `.env.local` in `next.config.ts` and queries Postgres with `pg` (`frontend/src/lib/db.ts`). Check the connection at http://localhost:3000/api/health/db.
+The backend reads that root `.env.local` (`backend/app/core/config.py`) and queries Postgres with psycopg (`backend/app/core/db.py`). Check the connection at http://localhost:8000/api/v1/health/db.
 
 ## CI
 
